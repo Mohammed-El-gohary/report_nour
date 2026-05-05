@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير الملاحظات – نور الحمد</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #20242f;
+    --border: #2e3348;
+    --accent: #e8c547;
+    --accent2: #f0a030;
+    --red: #e05252;
+    --green: #52c078;
+    --text: #e8eaf0;
+    --muted: #8892a4;
+    --tag-bg: #2a2f42;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #1a1d27 0%, #13161f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 32px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(232,197,71,0.08), transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-inner { max-width: 780px; margin: 0 auto; position: relative; }
+  .dept-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(232,197,71,0.12);
+    border: 1px solid rgba(232,197,71,0.3);
+    color: var(--accent);
+    padding: 4px 14px; border-radius: 20px;
+    font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    margin-bottom: 18px;
+  }
+  .hero h1 { font-size: 32px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub { color: var(--muted); font-size: 15px; }
+  .stats-row {
+    display: flex; gap: 16px; margin-top: 28px; flex-wrap: wrap;
+  }
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 22px;
+    flex: 1; min-width: 130px;
+  }
+  .stat-box .val { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .stat-box .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* SUMMARY */
+  .section { max-width: 780px; margin: 32px auto 0; padding: 0 32px; }
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 28px;
+  }
+  .summary-card h2 { font-size: 14px; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+  .summary-card p { font-size: 15px; line-height: 1.85; color: var(--text); }
+
+  /* ERROR CARDS */
+  .errors-label {
+    font-size: 12px; color: var(--muted); font-weight: 600;
+    letter-spacing: 1.5px; margin-bottom: 16px;
+  }
+  .error-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .error-card:hover { border-color: rgba(232,197,71,0.35); box-shadow: 0 4px 24px rgba(0,0,0,0.35); }
+  .error-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 22px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+  }
+  .error-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(224,82,82,0.15);
+    border: 1.5px solid rgba(224,82,82,0.35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--red); flex-shrink: 0;
+  }
+  .error-title-block { flex: 1; }
+  .error-title-block strong { font-size: 16px; display: block; margin-bottom: 4px; }
+  .meta-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    background: var(--tag-bg); border-radius: 6px;
+    padding: 3px 10px; font-size: 12px; color: var(--muted);
+  }
+  .toggle-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); border-radius: 8px;
+    padding: 6px 14px; font-size: 13px; cursor: pointer;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .toggle-btn:hover { background: var(--surface); color: var(--text); }
+  .error-body { display: none; padding: 22px; }
+  .error-body.open { display: block; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .detail-item label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px; font-weight: 600; }
+  .detail-item span { font-size: 14px; color: var(--text); }
+  .info-block {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .info-block h4 { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .info-block p { font-size: 14px; line-height: 1.7; }
+  .corrective { background: rgba(82,192,120,0.07); border: 1px solid rgba(82,192,120,0.2); }
+  .corrective h4 { color: var(--green); }
+  .corrective ul { padding-right: 18px; }
+  .corrective li { font-size: 14px; margin-bottom: 6px; line-height: 1.6; }
+
+  /* FINAL */
+  .final-card {
+    background: linear-gradient(135deg, rgba(232,197,71,0.06), rgba(240,160,48,0.04));
+    border: 1px solid rgba(232,197,71,0.2);
+    border-radius: 14px;
+    padding: 26px;
+    margin-top: 28px;
+  }
+  .final-card h3 { color: var(--accent); font-size: 16px; margin-bottom: 14px; }
+  .final-card p { font-size: 15px; line-height: 1.85; }
+  .signature { text-align: center; margin-top: 20px; color: var(--muted); font-size: 13px; }
+  .signature strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="dept-badge">قسم P2P</div>
+    <h1>تقرير الملاحظات التشغيلية<br><span>نور الحمد</span></h1>
+    <div class="hero-sub">النسخة المخصصة للإرسال الداخلي · أبريل 2026</div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="val">3</div><div class="lbl">أخطاء مسجلة</div></div>
+      <div class="stat-box"><div class="val">P2P</div><div class="lbl">القسم</div></div>
+      <div class="stat-box"><div class="val">04–20 أبريل</div><div class="lbl">الفترة الزمنية</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="summary-card">
+    <h2>الملخص العام</h2>
+    <p>تتركز الملاحظات المسجلة في نقص التوثيق، وعدم استكمال المتابعة مع العميل، والتأخر في تنفيذ بعض الإجراءات الحساسة. النقطة الأبرز أن أصل التعامل مع الحالة قد يتم، لكن لا يتم إغلاقها دائمًا بشكل صحيح من حيث السرعة والتوثيق والتحديث النهائي.</p>
+  </div>
+
+  <div class="errors-label">تفاصيل الأخطاء المسجلة</div>
+
+  <!-- ERROR 1 -->
+  <div class="error-card">
+    <div class="error-header" onclick="toggle(this)">
+      <div class="error-num">1</div>
+      <div class="error-title-block">
+        <strong>عدم تسجيل بيانات في الشيت (Excel)</strong>
+        <div class="meta-tags">
+          <span class="tag">الشيتات</span>
+          <span class="tag">02/04/2026 · 04:47 ص</span>
+          <span class="tag">kamal ebrahim</span>
+        </div>
+      </div>
+      <button class="toggle-btn">عرض التفاصيل ▾</button>
+    </div>
+    <div class="error-body">
+      <div class="info-block">
+        <h4>ما تم تسجيله</h4>
+        <p>قامت الموظفة بحظر حساب التاجر وإبلاغه عبر القناة الخاصة به على التليجرام، إلا أنها لم تقم بتسجيل فورم تعليق الحساب ضمن الداتا الخاصة بالقسم.</p>
+      </div>
+      <div class="info-block">
+        <h4>الخطأ الفعلي</h4>
+        <p>تم تنفيذ الإجراء التشغيلي مع التاجر، لكن لم يتم استكمال الجانب الإداري الخاص بتوثيق الحالة داخل القسم.</p>
+      </div>
+      <div class="info-block corrective">
+        <h4>الإجراء التصحيحي المطلوب مستقبلاً</h4>
+        <ul>
+          <li>تنفيذ الإجراء على الحساب</li>
+          <li>إبلاغ الطرف المعني</li>
+          <li>تسجيل الفورم مباشرة دون تأخير</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR 2 -->
+  <div class="error-card">
+    <div class="error-header" onclick="toggle(this)">
+      <div class="error-num">2</div>
+      <div class="error-title-block">
+        <strong>الرد على عميل / تاجر في التليجرام</strong>
+        <div class="meta-tags">
+          <span class="tag">التليجرام</span>
+          <span class="tag">19/04/2026 · 09:11 ص</span>
+          <span class="tag">kamal ebrahim</span>
+        </div>
+      </div>
+      <button class="toggle-btn">عرض التفاصيل ▾</button>
+    </div>
+    <div class="error-body">
+      <div class="info-block">
+        <h4>ما تم تسجيله</h4>
+        <p>تلقت الموظفة ردًا من التاجر بخصوص طلب سحب كان معلقًا على المنصة، وتم إبلاغها بأن المشكلة حُلَّت وأن الأموال عادت إلى حساب التاجر، إلا أنها لم تقم بإبلاغ العميل بالتحديث النهائي رغم أنه كان بانتظار الرد.</p>
+      </div>
+      <div class="info-block">
+        <h4>الخطأ الفعلي</h4>
+        <p>عدم استكمال المتابعة مع العميل بعد وصول التحديث النهائي على حالته.</p>
+      </div>
+      <div class="info-block corrective">
+        <h4>الإجراء التصحيحي المطلوب مستقبلاً</h4>
+        <ul>
+          <li>عدم ترك أي حالة بانتظار الرد دون تحديث</li>
+          <li>إرسال النتيجة النهائية فور وصولها</li>
+          <li>إغلاق المحادثة بعد توضيح الحالة بالكامل</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR 3 -->
+  <div class="error-card">
+    <div class="error-header" onclick="toggle(this)">
+      <div class="error-num">3</div>
+      <div class="error-title-block">
+        <strong>تأخر في تعليق حساب</strong>
+        <div class="meta-tags">
+          <span class="tag">المنصة</span>
+          <span class="tag">20/04/2026 · 07:44 ص</span>
+          <span class="tag">kamal ebrahim</span>
+        </div>
+      </div>
+      <button class="toggle-btn">عرض التفاصيل ▾</button>
+    </div>
+    <div class="error-body">
+      <div class="info-block">
+        <h4>ما تم تسجيله</h4>
+        <p>قامت الموظفة بإتمام طلب العميل في 07:44 ص، لكنها لم تقم بتعليق العميل حتى 09:01 ص، مما أدى إلى تمكن العميل من فتح طلب آخر في 08:18 ص. البريد: yousiflslam8002@gmail.com · الطلب: 39223950260346.</p>
+      </div>
+      <div class="info-block">
+        <h4>الخطأ الفعلي</h4>
+        <p>تأخر في اتخاذ إجراء تعليق الحساب في الوقت المناسب بعد إتمام الطلب الأول.</p>
+      </div>
+      <div class="info-block corrective">
+        <h4>الإجراء التصحيحي المطلوب مستقبلاً</h4>
+        <ul>
+          <li>تنفيذ التعليق مباشرة عند استحقاقه</li>
+          <li>عدم تأخير الإجراءات الحساسة</li>
+          <li>إبلاغ العميل فورًا بسبب التعليق</li>
+          <li>منع تكرار فتح الطلبات قبل ضبط حالة الحساب</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final-card">
+    <h3>الخلاصة النهائية والإجراء التصحيحي العام</h3>
+    <p>الالتزام بقاعدة أن كل حالة لا تعتبر منتهية إلا بعد تنفيذ الإجراء، وتوثيقه، وإبلاغ العميل أو التاجر، والتأكد من إغلاق الحالة نهائياً بشكل كامل.</p>
+  </div>
+
+  <div class="signature"><strong>مسؤول قسم P2P</strong></div>
+</div>
+
+<script>
+function toggle(header) {
+  const body = header.nextElementSibling;
+  const btn = header.querySelector('.toggle-btn');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  btn.textContent = isOpen ? 'عرض التفاصيل ▾' : 'إخفاء التفاصيل ▴';
+}
+</script>
+</body>
+</html>
